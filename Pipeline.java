@@ -9,17 +9,37 @@ import java.util.concurrent.*;
 public class Pipeline implements Runnable
 {
     // instance variables - replace the example below with your own
-    private int x;
+    Memoria memoria;
+    CyclicBarrier barrera1, barrera2;
+    
     public void run(){
+        if(Thread.currentThread().getName().equals("IF"))
+            {
+                hiloIF();
+            }
+            else if(Thread.currentThread().getName().equals("ID"))
+            {           
+                 hiloID();
+            }
+            else if(Thread.currentThread().getName().equals("EX")){
+                hiloEX();
+            }
+            else if(Thread.currentThread().getName().equals("ME")){
+                hiloME();
+            }
+            else if (Thread.currentThread().getName().equals("WB")){
+               hiloWB();
+            }
     }
 
     /**
      * Constructor for objects of class Hilos
      */
-    public Pipeline(CyclicBarrier barrera)
+    public Pipeline(CyclicBarrier bar1, CyclicBarrier bar2, Memoria mem)
     {
-        // initialise instance variables
-        x = 0;
+        this.barrera1 = bar1;
+        this.barrera2 = bar2;
+        this.memoria = mem;
     }
 
     /**
@@ -30,6 +50,7 @@ public class Pipeline implements Runnable
     public void hiloIF(){
        System. out. println("Soy IF\n");
     }
+    
      /**
      * funcion de Instruction Decode
      * @param  y   a sample parameter for a method

@@ -22,7 +22,7 @@ public class Memoria
     int cachDatos [][] = new int[6][4]; 
 
     //Vector de registros de maquina, x0...x31 y contemplando el registro RL
-    int vecRegMaquina [] = new int[33];
+    int vecRegMaquina [][] = new int[33][2];
 
     //Tabla de contextos 
     int tabContextos[][] = new int[9][37];

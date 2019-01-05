@@ -26,7 +26,7 @@ public class Hilo_Principal extends Thread
     String nomArch = "0.txt";
     Memoria memoria = new Memoria();
     static CyclicBarrier barrera; 
-    Pipeline pipeline = new Pipeline(barrera);
+    Pipeline pipeline;
 
     /**
      * Este metodo realiza una lectura de los hilillos a procesar
