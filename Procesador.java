@@ -7,6 +7,7 @@
  */
 
 import java.util.concurrent.*;
+import java.util.*;
 import java.io.FileNotFoundException;
 import javax.swing.JOptionPane;
 import java.io.*;
@@ -17,6 +18,7 @@ public class Procesador{
     static Memoria memoria = new Memoria();
     static CyclicBarrier barrera1;
     static CyclicBarrier barrera2;
+    int quantum, quanTemp = 0;
     
     /**
      * Este metodo realiza una lectura de los hilillos a procesar
@@ -66,7 +68,7 @@ public class Procesador{
     }
     
     public static void grabarFicheroTexto(){
-
+    
         mutex.acquireUninterruptibly();
         char c;
         String contenido = "";
@@ -125,24 +127,43 @@ public class Procesador{
     void correr()throws IOException { 
         String quantumS = JOptionPane.showInputDialog("Por favor introduzca el Quantum a dar a cada hilillo");
 
-        int quantum = Integer.parseInt(quantumS);
+        quantum = Integer.parseInt(quantumS);
         
-        int quanTemp = 0;
         recibirHilillos();
         memoria.imprimirTabContexto();
-        Runnable barrierAction = new Runnable() { public void run() {quanTemp++; }};
+        Runnable barrierAction = new Runnable() { public void run() {quanTemp++; if (quanTemp == quantum) cambioContexto();}};
         barrera1 = new CyclicBarrier(5);
         barrera2 = new CyclicBarrier(5, barrierAction);
+        List<Thread> threads = new ArrayList<Thread>(5);
         for(int i = 0; i < 5; ++i){
             Thread thread = new Thread(new Pipeline(barrera1, barrera2, memoria));
+            threads.add(thread);
             thread.start();
         }
-        
+        // Espera hasta que se mueran los pipeline
+        for (Thread thread : threads){
+          try {thread.join();}
+          catch(InterruptedException e){
+              e.printStackTrace();
+          }
+        }
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public void cambioContexto()
+    {
+        quanTemp = 0;
         
     }
 
+
     public static void main(String[] args) throws IOException {
-        Hilo_Principal hPrincipal = new Hilo_Principal();
-        hPrincipal.principal();
+        Procesador poi = new Procesador();
+        poi.correr();
     }
 }
