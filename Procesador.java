@@ -134,15 +134,18 @@ public class Procesador{
         Runnable barrierAction = new Runnable() { public void run() {quanTemp++; if (quanTemp == quantum) cambioContexto();}};
         barrera1 = new CyclicBarrier(5);
         barrera2 = new CyclicBarrier(5, barrierAction);
+        //Crea una lista para los hilos del pipeline y la llena
         List<Thread> threads = new ArrayList<Thread>(5);
-        for(int i = 0; i < 5; ++i){
-            Thread thread = new Thread(new Pipeline(barrera1, barrera2, memoria));
+        for(int i = 1; i < 6; ++i){
+            Thread thread = new Thread(new Pipeline(barrera1, barrera2, memoria, i));
             threads.add(thread);
             thread.start();
         }
         // Espera hasta que se mueran los pipeline
         for (Thread thread : threads){
-          try {thread.join();}
+          try {
+              thread.join();
+          }
           catch(InterruptedException e){
               e.printStackTrace();
           }

@@ -32,18 +32,18 @@ public class Memoria
     int vecIF_ID [] = new int[7];
     //4 IR, NPC, A, B, Inm, RIz, RDer
     int vecID_EX [] = new int[10];
-    //4 IR, ALU Ourput, RIz, RDer
+    //4 IR, ALU Output, RIz, RDer
     int vecEX_ME [] = new int[7];
     //4 IR, ALU Output, LMD, RIz, RDer
     int vecME_WB [] = new int[8];
 
-    int posicion=0;
+    int posicion = 0;
+    int NPC = 0;
 
     /**
      * Constructor for objects of class Memoria
      */
-    public Memoria()
-    {
+    public Memoria(){
         inicializar();
 
     }
@@ -89,8 +89,7 @@ public class Memoria
      * hilillo que es el identificador de hilillo
      * @return     the sum of x and y 
      */
-    public void llenarMatrizInstr(String instruc, int hilillo)
-    {
+    public void llenarMatrizInstr(String instruc, int hilillo){
         String instruccion;
         int count=0;
         instruccion = instruc;

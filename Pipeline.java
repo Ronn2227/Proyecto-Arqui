@@ -11,35 +11,33 @@ public class Pipeline implements Runnable
     // instance variables - replace the example below with your own
     Memoria memoria;
     CyclicBarrier barrera1, barrera2;
+    int fase = 0;
+    
     
     public void run(){
-        if(Thread.currentThread().getName().equals("IF"))
-            {
-                hiloIF();
-            }
-            else if(Thread.currentThread().getName().equals("ID"))
-            {           
-                 hiloID();
-            }
-            else if(Thread.currentThread().getName().equals("EX")){
-                hiloEX();
-            }
-            else if(Thread.currentThread().getName().equals("ME")){
-                hiloME();
-            }
-            else if (Thread.currentThread().getName().equals("WB")){
-               hiloWB();
-            }
+        switch(fase){
+            case 1: hiloIF();
+                    break;
+            case 2: hiloID();
+                    break;
+            case 3: hiloEX();
+                    break;
+            case 4: hiloME();
+                    break;
+            case 5: hiloWB();
+                    break;
+        }
     }
 
     /**
      * Constructor for objects of class Hilos
      */
-    public Pipeline(CyclicBarrier bar1, CyclicBarrier bar2, Memoria mem)
+    public Pipeline(CyclicBarrier bar1, CyclicBarrier bar2, Memoria mem, int f)
     {
         this.barrera1 = bar1;
         this.barrera2 = bar2;
         this.memoria = mem;
+        this.fase = f;
     }
 
     /**
@@ -58,6 +56,7 @@ public class Pipeline implements Runnable
      */
     public void hiloID(){
          System. out. println("Soy ID\n");
+         
 
     }
     
