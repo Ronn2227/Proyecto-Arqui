@@ -46,7 +46,18 @@ public class Pipeline implements Runnable
      * @return     the sum of x and y 
      */
     public void hiloIF(){
-       System. out. println("Soy IF\n");
+       
+        // Obtengo el PC actual de memoria
+        int PCAct = memoria.PC; 
+        // Calculo el nuevo PC (a ser usado en caso de que el ciclo siga)
+        int PCTemp = PCAct + 4;
+        
+        // Defino la variable para obtener las instrucción que voy a usar 
+        int Inst[] = new int [4];
+        
+        Inst = memoria.obtenerInstruccion (PCAct);
+        
+        System. out. println("Soy IF\n");
     }
     
      /**

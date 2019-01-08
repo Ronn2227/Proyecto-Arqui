@@ -118,12 +118,9 @@ public class Procesador{
 
     }
     
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y
-     */
+    /* Método que crea los hilos, les asigna las variables necesarias y los
+       inicia */
+    
     void correr()throws IOException { 
         String quantumS = JOptionPane.showInputDialog("Por favor introduzca el Quantum a dar a cada hilillo");
 
@@ -131,6 +128,7 @@ public class Procesador{
         
         recibirHilillos();
         memoria.imprimirTabContexto();
+        memoria.PC = 384;
         Runnable barrierAction = new Runnable() { public void run() {quanTemp++; if (quanTemp == quantum) cambioContexto();}};
         barrera1 = new CyclicBarrier(5);
         barrera2 = new CyclicBarrier(5, barrierAction);
@@ -152,18 +150,11 @@ public class Procesador{
         }
     }
     
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y
-     */
     public void cambioContexto()
     {
         quanTemp = 0;
-        
+        // actualizar ciclos en la tabla de contexto
     }
-
 
     public static void main(String[] args) throws IOException {
         Procesador poi = new Procesador();

@@ -14,7 +14,7 @@ public class Memoria
     //Memoria de Instruccion
     int menInst [] = new int[640] ;    
     //Cache de Instruccion 
-    int cachInst [] = new int[68];
+    int cachInst [][] = new int[4][17];
 
     //Memoria de Datos
     int menDatos [] = new int[96]; 
@@ -38,7 +38,8 @@ public class Memoria
     int vecME_WB [] = new int[8];
 
     int posicion = 0;
-    int NPC = 0;
+    int PC = 0;
+    int ciclos = 0;
 
     /**
      * Constructor for objects of class Memoria
@@ -65,7 +66,7 @@ public class Memoria
 
         //Se inicializa CI con campo de etiqueta en -1
         for(int c= 0; c<4; c++){
-            cachInst[c*17]=-1;
+            cachInst[c][0]=-1;
         }    
 
         /*Inicializamos la memoria de datos con un 1 para simular.Esto
@@ -77,6 +78,13 @@ public class Memoria
         //Se inicializa CD con etiqueta en -1
         for(int c = 0; c < 4; c++){
             cachDatos[4][c]=-1;
+        }
+        
+        /*Se inicializan los registros de la máquina*/
+        for(int c=0; c<33; c++){
+        
+            vecRegMaquina [c][0] = 0;
+            vecRegMaquina [c][1] = 0;
         }
     }
 
@@ -133,4 +141,18 @@ public class Memoria
             System.out.println("");
         }
     }
+
+    /**
+     * Método que obtiene la instrucción que voy a ejecutar y revisa
+     * si hay fallo de cache. En caso de que exista el fallo, se representa
+     * el retraso al sumarle 48 ciclos a la variable ciclos
+     */
+    public int[] obtenerInstruccion(int PC)
+    {
+        int numBloque = PC/16;
+        int 
+        return y;
+    }
+
+
 }
