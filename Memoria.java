@@ -40,6 +40,8 @@ public class Memoria
     int posicion = 0;
     int PC = 0;
     int ciclos = 0;
+    int hililloTemp = 1;
+    boolean CC = false;
 
     /**
      * Constructor for objects of class Memoria
@@ -150,8 +152,12 @@ public class Memoria
     public int[] obtenerInstruccion(int PC)
     {
         int numBloque = PC/16;
-        int 
-        return y;
+        int posBloque = (PC - (numBloque* 16))/4;
+        int posCache = 0;
+        int instr [] = new int [4];
+        for(int i =0; i < 4; ++i)
+            instr[i] = cachInst[posCache][posBloque+i];
+        return instr;
     }
 
 
