@@ -48,7 +48,6 @@ public class Memoria
      */
     public Memoria(){
         inicializar();
-
     }
 
     /**
@@ -151,14 +150,44 @@ public class Memoria
      */
     public int[] obtenerInstruccion(int PC)
     {
+        // Obtengo el numero de bloque donde esta la instruccion
         int numBloque = PC/16;
-        int posBloque = (PC - (numBloque* 16))/4;
-        int posCache = 0;
+        // Obtengo el # de bloque de cache donde debo poner el bloque de meoria
+        int posCache = numBloque % 4;
+        // Obtengo el # de palabra que necesito
+        int posBloque = (PC % 16) / 4;
+        // Defino el arreglo donde voy a guardar las instruccion
         int instr [] = new int [4];
-        for(int i =0; i < 4; ++i)
-            instr[i] = cachInst[posCache][posBloque+i];
+        
+        // Pregunto si el bloque que necesito está en cache
+        if(cachInst[posCache][0] != numBloque){
+            
+            // poner el tag del bloque en cache
+            cachInst[posCache][0] = numBloque;
+            
+            // Meter a cache el bloque desde memoria
+            for(int i =0; i < 16; ++i){
+                cachInst[posCache][i+1] = menInst[((numBloque - 24)*16) + i];
+            }
+            
+            // Agrego los ciclos al contador de retraso para simular el fallo
+            // de cache
+            ciclos += 48;
+        }
+        
+        // Cargo en la variable designada la instruccion que necesito
+        for(int i =0; i < 4; ++i){
+            instr[i] = cachInst[posCache][(posBloque*4)+i+1];
+        }
         return instr;
     }
 
+    /**
+     * Metodo que se encarga de resolver el conflicto de cache de instrucciones
+     */
+    public void moverACacheD(int X, int Y){
+        // put your code here
+        
+    }
 
 }

@@ -53,20 +53,31 @@ public class Pipeline implements Runnable
             int PCTemp = PCAct + 4;
             // Defino la variable para obtener las instrucción que voy a usar 
             int inst[] = memoria.obtenerInstruccion (PCAct);
-            //inst = memoria.obtenerInstruccion (PCAct);
+            
+            // Llego a la primera barrera
             try {
                barrera1.await();
              } catch (InterruptedException | BrokenBarrierException e) {
                e.printStackTrace();
              } 
              
-            for(int i = 0; i < 4; ++i)
-                memoria.vecIF_ID[i] = inst[i];
+             // Revisar si ID reporto algun error o si puede seguir
+             // 0 es seguir, 1 es error
+            if(memoria.vecIF_ID[6] == 0){
+                
+                // copiar instruccion
+                for(int i = 0; i < 4; ++i){
+                    memoria.vecIF_ID[i] = inst[i];
+                }
+                
+                // copiar el NPC
+                memoria.vecIF_ID[4] = PCTemp;
+                
+                //Cambio el PC General
+                memoria.PC = PCTemp;
+            }
             
-            memoria.vecIF_ID[4] = PCAct;
-            memoria.vecIF_ID[5] = 0;
-            memoria.vecIF_ID[6] = 0;
-            memoria.PC = PCTemp;
+            // Llego a la segunda barrera
             try {
                barrera2.await();
              } catch (InterruptedException | BrokenBarrierException e) {

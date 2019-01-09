@@ -129,7 +129,7 @@ public class Procesador{
         recibirHilillos();
         memoria.imprimirTabContexto();
         memoria.PC = 384;
-        Runnable barrierAction = new Runnable() { public void run() {quanTemp++; if (quanTemp == quantum) cambioContexto();}};
+        Runnable barrierAction = new Runnable() { public void run() {quanTemp++; memoria.ciclos ++; if (quanTemp == quantum) cambioContexto();}};
         barrera1 = new CyclicBarrier(5);
         barrera2 = new CyclicBarrier(5, barrierAction);
         //Crea una lista para los hilos del pipeline y la llena
