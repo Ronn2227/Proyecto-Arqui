@@ -45,7 +45,7 @@ public class Pipeline implements Runnable
      * @return     the sum of x and y 
      */
     public void hiloIF(){
-        while(!finHilillos()){
+        while(memoria.noFinHilillos()){
             // Obtengo el PC actual de memoria
             int PCAct = memoria.PC; 
             // Calculo el nuevo PC (a ser usado en caso de que el ciclo siga)
@@ -117,7 +117,7 @@ public class Pipeline implements Runnable
      * @return     the sum of x and y 
      */
     public void hiloID(){
-        while(!finHilillos()){
+        while(memoria.noFinHilillos()){
 
             int IR [] = new int [4];
             int NPC = 0;
@@ -307,7 +307,7 @@ public class Pipeline implements Runnable
      * @return     the sum of x and y 
      */
     public void hiloEX() {
-        while(!finHilillos()){
+        while(memoria.noFinHilillos()){
 
             int IR [] = new int [4];
             int NPC = 0;
@@ -469,7 +469,7 @@ public class Pipeline implements Runnable
             } 
 
             //Evaluo si hay error. Ambos en 0 sigifica que no hay.
-            if(memoria.vecEX_ME[5] == 0 && memoria.vecEX_ME[6] == 0){
+            if(memoria.vecEX_ME[6] == 0 && memoria.vecEX_ME[7] == 0){
 
                 // Copio los valores al vector intermedio
                 // Copio la instruccion
@@ -480,6 +480,7 @@ public class Pipeline implements Runnable
 
                 // Copio el NPC
                 memoria.vecEX_ME[4] = AluOut;
+                memoria.vecEX_ME[5] = AluOut;
 
             }
 
@@ -500,6 +501,87 @@ public class Pipeline implements Runnable
      * @return     the sum of x and y 
      */
     public void hiloME(){
+        while(memoria.noFinHilillos()){
+            //Obtengo los valores de la fase anterior
+            int IR [] = new int [4];
+            int NPC = memoria.vecEX_ME[4];
+            int AluOut = memoria.vecEX_ME[5];
+            int LMD = 0;
+
+            // Obtengo la instruccion
+            for(int a=0; a<4; a++){
+
+                IR[a] = memoria.vecEX_ME[a];
+            }
+
+            //Llego a la primera barrera
+            try {
+                barrera1.await();
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            } 
+
+            //Evaluo si hay error. Ambos en 0 sigifica que no hay.
+            if(memoria.vecME_WB[8] == 0 && memoria.vecME_WB[9] == 0){
+                    switch (IR[0]){
+                    case 5 :  //lw
+    
+                    case 51: //lr
+                    
+                              LMD = memoria.obtenerDato(AluOut);//lw
+                              break;
+    
+                    case 37:  //sw
+    
+                    case 52:  //sc
+                              memoria.escribirdato(AluOut, IR[2]);
+                              break;
+    
+                    case 999: // fin
+    
+                    case 000: //NOPE (para cambio de contexto)          
+    
+                              for(int i = 0; i < 4; ++i){
+                                  IR[i] = 0;
+                              }
+                            
+                              break;
+                    
+                    default:  System.out.println("No se reconoce la instrucción");
+                              break;
+                }
+                // Copio los valores al vector intermedio
+                // Copio la instruccion
+                for(int i = 0; i < 4; ++i){
+
+                    memoria.vecME_WB[i] = IR[i];
+                }
+
+                // Copio el NPC
+                memoria.vecME_WB[4] = NPC;
+                //Copio el ALU output
+                memoria.vecME_WB[5] = AluOut;
+                // Copio el LMD
+                memoria.vecME_WB[6] = LMD;
+
+            }
+            // si hay error en la fase anterior y necesito no hacer nada la siguiente
+            if(memoria.vecEX_ME[6] == 1){
+                // Me pongo en error para no hacer nada la proxima
+                memoria.vecME_WB[7] = 1;
+            }
+            else{
+                // Me libero
+                memoria.vecME_WB[7] = 0;
+            }
+
+            try {
+                barrera2.await();
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            }
+
+        }
         System. out. println("Soy ME\n");
 
     }
@@ -510,25 +592,93 @@ public class Pipeline implements Runnable
      * @return     the sum of x and y 
      */
     public void hiloWB(){
-        System. out. println("Soy WB\n");
-        // liberar registros
-    }
+        while(memoria.noFinHilillos()){
+            //Obtengo los valores de la fase anterior
+            int IR [] = new int [4];
+            int NPC = memoria.vecMe_WB[4];
+            int AluOut = memoria.vecME_WB[5];
+            int LMD = memoria.vecME_WB[6];
 
-    /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y   a sample parameter for a method
-     * @return     the sum of x and y
-     */
-    public boolean finHilillos()
-    {
-        boolean respuesta = false;
-        if(memoria.tabContextos[0][1] == 1 && memoria.tabContextos[1][1] == 1 && memoria.tabContextos[2][1] == 1
-        && memoria.tabContextos[3][1] == 1 && memoria.tabContextos[4][1] == 1 && memoria.tabContextos[5][1] == 1
-        && memoria.tabContextos[6][1] == 1 && memoria.tabContextos[7][1] == 1 && memoria.tabContextos[8][1] == 1){
-            respuesta = true;
+            // Obtengo la instruccion
+            for(int a=0; a<4; a++){
+                IR[a] = memoria.vecEX_ME[a];
+            }
+
+            //Llego a la primera barrera
+            try {
+                barrera1.await();
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            } 
+
+            // Revisar si ID reporto algun error o si puede seguir
+            // 0 es seguir, 1 es error. Si procesador envio la señal de 
+            // fin de quantum, entonces tendría un 1 en vec IF_ID [5]
+            if(memoria.vecME_WB[7] == 0 && memoria.vecME_WB[8] == 0){
+                switch (IR[0]){
+                    case 51:  //lr
+                              memoria.vecRegMaquina [32][0] = IR[2];
+                              memoria.vecRegMaquina [32][1]++;
+                    case 5 :  //lw
+                              memoria.vecRegMaquina [IR[1]][0] = LMD;
+                              memoria.vecRegMaquina [IR[1]][1]++;
+                              break;
+                    case 103: // jalr
+        
+                    case 111: // jal
+                              memoria.vecRegMaquina [IR[1]][0] = NPC;
+                              memoria.vecRegMaquina [IR[1]][1]++;
+                              break;
+                    case 19:  //addi
+        
+                    case 71:  //add
+        
+                    case 83:  //sub
+        
+                    case 72:  //mul
+        
+                    case 56:  //div
+                              memoria.vecRegMaquina [IR[1]][0] = AluOut;
+                              memoria.vecRegMaquina [IR[1]][1]++;
+                              break;
+        
+                    case 999: // fin
+        
+                    case 000: //NOPE (para cambio de contexto)          
+        
+                        for(int i = 0; i < 4; ++i){
+        
+                            IR[i] = 0;
+                            
+                        }
+                    
+                        break;
+                    
+                    default:  System.out.println("No se reconoce la instrucción");
+                    break;
+                }
+                
+            }
+            
+            // si hay error en la fase anterior y necesito no hacer nada la siguiente
+            if(memoria.vecME_WB[7] == 1){
+                // Me pongo en error para no hacer nada la proxima
+                memoria.vecME_WB[8] = 1;
+            }
+            else{
+                // Me libero
+                memoria.vecME_WB[8] = 0;
+            }
+            
+            // Llego a la segunda barrera
+            try {
+                barrera2.await();
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            }
         }
-        return respuesta;
+        
+        System. out. println("Soy WB\n");
     }
 
     /**

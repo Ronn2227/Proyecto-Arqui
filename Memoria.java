@@ -32,10 +32,10 @@ public class Memoria
     int vecIF_ID [] = new int[7];
     //4 IR, NPC, A, B, Inm, RIz, RDer
     int vecID_EX [] = new int[10];
-    //4 IR, ALU Output, RIz, RDer
-    int vecEX_ME [] = new int[7];
-    //4 IR, ALU Output, LMD, RIz, RDer
-    int vecME_WB [] = new int[8];
+    //4 IR, NPC, ALU Output, RIz, RDer
+    int vecEX_ME [] = new int[8];
+    //4 IR, NPC, ALU Output, LMD, RIz, RDer
+    int vecME_WB [] = new int[9];
 
     int posicion = 0;
     int PC = 0;
@@ -191,13 +191,71 @@ public class Memoria
         }
         return instr;
     }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y  a sample parameter for a method
+     * @return    the sum of x and y
+     */
+    public int obtenerDato(int pos)
+    {
+        // Obtengo el numero de bloque donde esta la instruccion
+        int numBloque = pos/16;
+        // Obtengo el # de bloque de cache donde debo poner el bloque de meoria
+        int posCache = numBloque % 4;
+        // Obtengo el # de palabra que necesito
+        int posBloque = (pos % 16) / 4;
+        
+        int dato = 0;
+        
+        if(cachDatos[0][posCache] != numBloque){
+            moverACacheD(numBloque, posCache);
+        }
+        
+        dato = cachDatos[posBloque+2][posCache];
+        return dato;
+    }
 
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y  a sample parameter for a method
+     * @return    the sum of x and y
+     */
+    public void escribirDato(int pos, int dato)
+    {
+        // Obtengo el numero de bloque donde esta la instruccion
+        int numBloque = pos/16;
+        // Obtengo el # de bloque de cache donde debo poner el bloque de meoria
+        int posCache = numBloque % 4;
+        // Obtengo el # de palabra que necesito
+        int posBloque = (pos % 16) / 4;
+        
+        if(cachDatos[0][posCache] != numBloque){
+            moverACacheD(numBloque, posCache);
+        }
+        
+        cachDatos[posBloque+2][posCache] = dato;
+    }
+
+    
     /**
      * Metodo que se encarga de resolver el conflicto de cache de instrucciones
      */
-    public void moverACacheD(int X, int Y){
-        // put your code here
-        
+    public void moverACacheD(int bloque, int pos){
+        if(cachDatos[1][pos] == 1){
+            for(int i = 0; i < 4; ++i){
+                menDatos[cachDatos[0][pos]*4 + i] = cachDatos[i+2][pos];
+            }
+            ciclos+=48;
+        }
+        cachDatos[0][pos] = bloque;
+        cachDatos[1][pos] = 0;
+        for(int i = 0; i < 4; ++i){
+             cachDatos[i+2][pos] = menDatos[bloque*4 + i];
+        }
+        ciclos+=48;
     }
     
     /**
