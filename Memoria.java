@@ -87,6 +87,16 @@ public class Memoria
             vecRegMaquina [c][0] = 0;
             vecRegMaquina [c][1] = 0;
         }
+        
+        for(int i = 0; i < 7; ++i){
+            vecIF_ID [i] = 0;
+            vecID_EX [i] = 0;
+            vecEX_ME [i] = 0;
+            vecME_WB [i] = 0;
+        }
+        vecME_WB [7] = 0;
+        for(int i = 7; i < 10; ++i)
+            vecID_EX [i] = 0;
     }
 
     /**
