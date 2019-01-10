@@ -153,7 +153,13 @@ public class Procesador{
     public void cambioContexto()
     {
         quanTemp = 0;
-        // actualizar ciclos en la tabla de contexto
+        // actualizar ciclos en la tabla de contexto ****
+        
+        // actualizo el registro de error izquierdo de IF para que no lea
+        // nada mas
+        memoria.vecIF_ID[5] = 1;
+        
+        // inicializar los campos de los vectores intermedios
     }
 
     public static void main(String[] args) throws IOException {
