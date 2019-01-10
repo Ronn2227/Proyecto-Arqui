@@ -25,7 +25,7 @@ public class Memoria
     int vecRegMaquina [][] = new int[33][2];
 
     //Tabla de contextos 
-    int tabContextos[][] = new int[9][37];
+    int tabContextos[][] = new int[9][36];
 
     //Estructuras entre etapas
     //4 IR, NPC, RIz, RDer 
@@ -199,5 +199,39 @@ public class Memoria
         // put your code here
         
     }
-
+    
+    /**
+     * Cuenta la cantidad de Hilillos corriendo
+     *
+     * @return    la cantidad de hilos
+     */
+    public int cantHilillos()
+    {
+        int respuesta = 0;
+        for(int i = 0; i < 9; ++i){
+            if(tabContextos[i][0] != -1){
+                respuesta++;
+            }else{
+                break;
+            }
+        }
+        return respuesta;
+    }
+    
+    /**
+     * An example of a method - replace this comment with your own
+     *
+     * @param  y   a sample parameter for a method
+     * @return     the sum of x and y
+     */
+    public boolean noFinHilillos()
+    {
+        boolean respuesta = true;
+        if(tabContextos[0][1] == 1 && tabContextos[1][1] == 1 && tabContextos[2][1] == 1
+           && tabContextos[3][1] == 1 && tabContextos[4][1] == 1 && tabContextos[5][1] == 1
+           && tabContextos[6][1] == 1 && tabContextos[7][1] == 1 && tabContextos[8][1] == 1){
+               respuesta = false;
+        }
+        return respuesta;
+    }
 }
